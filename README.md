@@ -9,7 +9,9 @@ Considerations:
 > Usage on production environments is on your own discretion.
 
 # Installation
-> go get github.com/cobearcoding/mongo-krnk
+```terminal
+ go get github.com/cobearcoding/mongo-krnk
+ ```
 ---
 ### Please make sure to have installed:
 

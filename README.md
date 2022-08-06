@@ -1,4 +1,8 @@
-# Mongo-KRNK
+# Mongo-KRNK ![status](https://badgen.net/badge/alpha/passing/green?icon=github) ![latest release](https://badgen.net/github/release/cobearcoding/mongo-krnk)
+
+![language](https://img.shields.io/badge/Go-00ADD8?style=for-the-badge&logo=go&logoColor=white)
+![mongoDB](https://img.shields.io/badge/MongoDB-4EA94B?style=for-the-badge&logo=mongodb&logoColor=white)
+
 Is a simple implementation of the [mongoDB]("https://www.mongodb.com/docs/drivers/go/current/fundamentals/crud/write-operations/upsert/") official driver for ease of use inside different personal projects.
 
 Considerations:

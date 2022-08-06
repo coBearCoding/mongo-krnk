@@ -41,6 +41,41 @@ type MongoQuery struct {
    FindOne returns a single document from the collection.
 
    It takes a struct as a parameter, and returns a bson.M
+
+   The Key / Value pair is not used with this type of Query.
+*/
+
+func (m *MongoQuery) FindAll() ([]bson.M, error) {
+	client := connect(m.MongoURI)
+	ctx := context.Background()
+	var results []bson.M
+	collection := client.Database(m.Database).Collection(m.Collection)
+
+	filter := bson.D{}
+	cursor, err := collection.Find(ctx, filter)
+	if err != nil {
+		log.Println(err)
+		return nil, err
+	}
+	defer cursor.Close(ctx)
+
+	for cursor.Next(ctx) {
+		var result bson.M
+		err := cursor.Decode(&result)
+		if err != nil {
+			log.Println(err)
+			return nil, err
+		}
+		results = append(results, result)
+	}
+
+	return results, nil
+}
+
+/*
+   FindOne returns a single document from the collection.
+
+   It takes a struct as a parameter, and returns a bson.M
 */
 func (m *MongoQuery) FindOne() (bson.M, error) {
 	client := connect(m.MongoURI)

@@ -3,7 +3,6 @@ package orm
 import (
 	"context"
 	"log"
-	"os"
 	"sync"
 
 	"go.mongodb.org/mongo-driver/bson"
@@ -15,9 +14,9 @@ var connectOnce sync.Once
 var client *mongo.Client
 var err error
 
-func connect() *mongo.Client {
+func connect(uri string) *mongo.Client {
 	connectOnce.Do(func() {
-		clientOptions := options.Client().ApplyURI(os.Getenv("MONGO_URL")).SetMaxPoolSize(1000)
+		clientOptions := options.Client().ApplyURI(uri).SetMaxPoolSize(1000)
 		client, err = mongo.Connect(context.TODO(), clientOptions)
 	})
 
@@ -29,6 +28,7 @@ func connect() *mongo.Client {
 }
 
 type MongoQuery struct {
+	MongoURI   string
 	Database   string
 	Collection string
 	Key        string
@@ -43,7 +43,7 @@ type MongoQuery struct {
    It takes a struct as a parameter, and returns a bson.M
 */
 func (m *MongoQuery) FindOne() (bson.M, error) {
-	client := connect()
+	client := connect(m.MongoURI)
 	ctx := context.Background()
 	var result bson.M
 	collection := client.Database(m.Database).Collection(m.Collection)
@@ -63,7 +63,7 @@ func (m *MongoQuery) FindOne() (bson.M, error) {
    It takes a struct as a parameter, and returns a []bson.M
 */
 func (m *MongoQuery) Find() ([]bson.M, error) {
-	client := connect()
+	client := connect(m.MongoURI)
 	ctx := context.Background()
 	var results []bson.M
 	collection := client.Database(m.Database).Collection(m.Collection)
@@ -90,6 +90,7 @@ func (m *MongoQuery) Find() ([]bson.M, error) {
 }
 
 type MongoInsert struct {
+	MongoURI   string
 	Database   string
 	Collection string
 	Value      bson.D
@@ -102,7 +103,7 @@ type MongoInsert struct {
    something happened.
 */
 func (m *MongoInsert) InsertOne() error {
-	client := connect()
+	client := connect(m.MongoURI)
 	ctx := context.Background()
 	collection := client.Database(m.Database).Collection(m.Collection)
 	_, err := collection.InsertOne(ctx, m.Value)
@@ -115,6 +116,7 @@ func (m *MongoInsert) InsertOne() error {
 }
 
 type MongoUpdate struct {
+	MongoURI    string
 	Database    string
 	Collection  string
 	FilterKey   string
@@ -129,7 +131,7 @@ type MongoUpdate struct {
    something happened.
 */
 func (m *MongoUpdate) UpdateOne() error {
-	client := connect()
+	client := connect(m.MongoURI)
 	ctx := context.Background()
 	collection := client.Database(m.Database).Collection(m.Collection)
 	filter := bson.D{{Key: m.FilterKey, Value: m.FilterValue}}
@@ -148,6 +150,7 @@ func (m *MongoUpdate) UpdateOne() error {
 */
 
 type MongoRawQuery struct {
+	MongoURI   string
 	Database   string
 	Collection string
 	Query      bson.D
@@ -163,7 +166,7 @@ type MongoRawQuery struct {
    Please refer to the mongo documentation for further information.
 */
 func (m *MongoRawQuery) FindRaw() ([]bson.M, error) {
-	client := connect()
+	client := connect(m.MongoURI)
 	ctx := context.Background()
 	collection := client.Database(m.Database).Collection(m.Collection)
 	var results []bson.M
@@ -189,6 +192,7 @@ func (m *MongoRawQuery) FindRaw() ([]bson.M, error) {
 }
 
 type MongoRawUpdate struct {
+	MongoURI   string
 	Database   string
 	Collection string
 	Filter     bson.D
@@ -203,7 +207,7 @@ type MongoRawUpdate struct {
    Please refer to the mongo documentation for further information.
 */
 func (m *MongoRawUpdate) UpdateRaw() error {
-	client := connect()
+	client := connect(m.MongoURI)
 	ctx := context.Background()
 	collection := client.Database(m.Database).Collection(m.Collection)
 	_, err := collection.UpdateOne(ctx, m.Filter, m.Update)

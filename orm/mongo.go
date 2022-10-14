@@ -259,7 +259,7 @@ type MongoDelete struct {
 	Database    string
 	Collection  string
 	FilterKey   string
-	FilterValue string
+	FilterValue interface{}
 }
 
 func (m *MongoDelete) Delete() error {

@@ -73,9 +73,9 @@ func (m *MongoQuery) FindAll() ([]bson.M, error) {
 }
 
 /*
-   FindOne returns a single document from the collection.
+FindOne returns a single document from the collection.
 
-   It takes a struct as a parameter, and returns a bson.M
+It takes a struct as a parameter, and returns a bson.M
 */
 func (m *MongoQuery) FindOne() (bson.M, error) {
 	client := connect(m.MongoURI)
@@ -93,9 +93,9 @@ func (m *MongoQuery) FindOne() (bson.M, error) {
 }
 
 /*
-   Find returns multple documents from the collection.
+Find returns multple documents from the collection.
 
-   It takes a struct as a parameter, and returns a []bson.M
+It takes a struct as a parameter, and returns a []bson.M
 */
 func (m *MongoQuery) Find() ([]bson.M, error) {
 	client := connect(m.MongoURI)
@@ -132,10 +132,10 @@ type MongoInsert struct {
 }
 
 /*
-   InsertOne inserts one document to the collection.
+InsertOne inserts one document to the collection.
 
-   It takes a struct as a parameter, and returns an error if
-   something happened.
+It takes a struct as a parameter, and returns an error if
+something happened.
 */
 func (m *MongoInsert) InsertOne() error {
 	client := connect(m.MongoURI)
@@ -160,10 +160,10 @@ type MongoUpdate struct {
 }
 
 /*
-   UpdateOne updates one document to the collection.
+UpdateOne updates one document to the collection.
 
-   It takes a struct as a parameter, and returns an error if
-   something happened.
+It takes a struct as a parameter, and returns an error if
+something happened.
 */
 func (m *MongoUpdate) UpdateOne() error {
 	client := connect(m.MongoURI)
@@ -192,13 +192,13 @@ type MongoRawQuery struct {
 }
 
 /*
-   FindRaw returns multple documents from the collection.
+FindRaw returns multple documents from the collection.
 
-   It takes a struct as a parameter, and returns a []bson.M
+It takes a struct as a parameter, and returns a []bson.M
 
-   This function exposes filtering for advanced queries.
+This function exposes filtering for advanced queries.
 
-   Please refer to the mongo documentation for further information.
+Please refer to the mongo documentation for further information.
 */
 func (m *MongoRawQuery) FindRaw() ([]bson.M, error) {
 	client := connect(m.MongoURI)
@@ -235,11 +235,11 @@ type MongoRawUpdate struct {
 }
 
 /*
-   UpdateRaw returns an error if something happened.
+UpdateRaw returns an error if something happened.
 
-   This function exposes filtering and updating custom queries for advanced use.
+This function exposes filtering and updating custom queries for advanced use.
 
-   Please refer to the mongo documentation for further information.
+Please refer to the mongo documentation for further information.
 */
 func (m *MongoRawUpdate) UpdateRaw() error {
 	client := connect(m.MongoURI)
@@ -254,4 +254,23 @@ func (m *MongoRawUpdate) UpdateRaw() error {
 	return nil
 }
 
+type MongoDelete struct {
+	MongoURI    string
+	Database    string
+	Collection  string
+	FilterKey   string
+	FilterValue string
+}
 
+func Delete(m *MongoDelete) error {
+	client := connect(m.MongoURI)
+	ctx := context.Background()
+	collection := client.Database(m.Database).Collection(m.Collection)
+	filter := bson.D{{Key: m.FilterKey, Value: m.FilterValue}}
+	_, err := collection.DeleteOne(ctx, filter)
+	if err != nil {
+		log.Println(err)
+		return err
+	}
+	return nil
+}

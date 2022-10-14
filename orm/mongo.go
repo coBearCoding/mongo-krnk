@@ -262,7 +262,7 @@ type MongoDelete struct {
 	FilterValue string
 }
 
-func Delete(m *MongoDelete) error {
+func (m *MongoDelete) Delete() error {
 	client := connect(m.MongoURI)
 	ctx := context.Background()
 	collection := client.Database(m.Database).Collection(m.Collection)

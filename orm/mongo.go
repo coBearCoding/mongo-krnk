@@ -137,17 +137,17 @@ InsertOne inserts one document to the collection.
 It takes a struct as a parameter, and returns an error if
 something happened.
 */
-func (m *MongoInsert) InsertOne() error {
+func (m *MongoInsert) InsertOne() (*mongo.InsertOneResult, error) {
 	client := connect(m.MongoURI)
 	ctx := context.Background()
 	collection := client.Database(m.Database).Collection(m.Collection)
-	_, err := collection.InsertOne(ctx, m.Value)
+	result, err := collection.InsertOne(ctx, m.Value)
 	if err != nil {
 		log.Println(err)
-		return err
+		return nil, err
 	}
 
-	return nil
+	return result, nil
 }
 
 type MongoUpdate struct {
